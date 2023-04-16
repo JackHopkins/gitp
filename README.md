@@ -53,8 +53,6 @@ Added detailed instructions for installing and using GitParts. The README now in
 
 Optionally use the '-i' flag when committing, to better include information relevant to the reader.
 
-
-
 ### Create a new branch
 Use the -i flag followed by a description of the purpose of branch to autogenerate in the style of existing branch names:
 
