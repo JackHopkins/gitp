@@ -37,9 +37,6 @@ if [ "$1" == "commit" ]; then
         exit 0
     fi
 
-    echo ${git_diff}
-    echo ${branch_name}
-
     if [ -z "${GPT4_API_KEY}" ]; then
         read -p "Enter your GPT-4 API key: " GPT4_API_KEY
         if [ "$(uname)" == "Darwin" ]; then
