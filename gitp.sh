@@ -130,7 +130,7 @@ if [ "$1" == "commit" ]; then
         git show "${branch_desc_ref}" > "${tmp_file}"
     fi
 
-    echo -e "\n${commit_message_full}\n" >> "${tmp_file}"
+    echo -e "\n${commit_message_subject}\n" >> "${tmp_file}"
     git notes --ref "branch-descriptions/${branch_name}" add -f -F "${tmp_file}"
     rm "${tmp_file}"
 
