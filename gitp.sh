@@ -49,6 +49,7 @@ if [ "$1" == "commit" ]; then
     fi
 
     payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"${gpt_message}\"}]}"
+
     echo ${payload}
     # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
     commit_message=$(curl -s -H "Content-Type: application/json" \
