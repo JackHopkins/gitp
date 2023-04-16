@@ -136,16 +136,15 @@ if [ "$1" == "commit" ]; then
 
 elif [ "$1" == "branch" ]; then
     shift
-
     if [ "$#" -eq 0 ]; then
         branches_output=$(git branch --color=always)
         echo "${branches_output}" | while read -r branch_line; do
             branch_name=$(echo "${branch_line}" | sed 's/^\* //;s/^  //')
             branch_desc_ref="refs/notes/branch-descriptions/${branch_name}"
             if git show-ref --quiet --verify "${branch_desc_ref}" 2>/dev/null; then
-                branch_desc=$(git notes --ref "branch-descriptions/${branch_name}" show 2>/dev/null | sed 's/^/  /')
+                branch_desc=$(git notes --ref "branch-descriptions/${branch_name}" show 2>/dev/null)
                 if [ $? -eq 0 ]; then
-                    echo -e "${branch_line}\n${branch_desc}\n"
+                    echo -e "${branch_line}\n$(echo "${branch_desc}" | sed 's/^/  /')\n"
                 else
                     echo "${branch_line}"
                 fi
