@@ -17,6 +17,8 @@ if [ "$1" == "commit" ]; then
 
 
     branch_name=$(git symbolic-ref --short -q HEAD)
+
+    echo ${branch_name}
     git_diff=$(git diff)
 
     if [ -z "${GPT4_API_KEY}" ]; then
