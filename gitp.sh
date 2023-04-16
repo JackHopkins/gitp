@@ -159,7 +159,6 @@ elif [ "$1" == "branch" ]; then
             passthrough_flags+=( "$1" )
             shift
         done
-
         git branch "${passthrough_flags[@]}"
     fi
 elif [ "$1" == "checkout" ]; then
