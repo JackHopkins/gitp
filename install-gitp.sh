@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Save this file as 'install-gitp.sh' and make it executable (chmod +x install-gitp.sh)
-
 # Check if jq is installed and install it if necessary
 if ! command -v jq &> /dev/null; then
     echo "jq is not installed. Installing jq..."

@@ -151,7 +151,6 @@ elif [ "$1" == "branch" ]; then
         done
     else
         passthrough_flags=()
-
         while (( "$#" )); do
             passthrough_flags+=( "$1" )
             shift
