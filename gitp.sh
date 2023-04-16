@@ -66,7 +66,7 @@ if [ "$1" == "commit" ]; then
 
     echo "${api_response}"
 
-    commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.text' | tr -d '\n')
+    commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\n')
 
     echo "${commit_message}"
     # Commit with the generated message
