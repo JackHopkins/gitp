@@ -45,7 +45,7 @@ if [ "$1" == "commit" ]; then
                          https://api.openai.com/v1/chat/completions | jq -r '.choices[0].message.text' | tr -d '\n')
 
     # Commit with the generated message
-    git commit -m "${commit_message}"
+    #git commit -m "${commit_message}"
 else
     echo "Invalid command. Usage: gitp commit [-i intent]"
     exit 1
