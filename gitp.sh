@@ -140,7 +140,7 @@ elif [ "$1" == "branch" ]; then
         branch_name=$(echo "${branch_line}" | sed 's/^\* //;s/^  //')
         branch_desc_ref="refs/notes/branch-descriptions/${branch_name}"
         if git show-ref --quiet --verify "${branch_desc_ref}" 2>/dev/null; then
-            branch_desc=$(git show --no-patch --format=%B "${branch_desc_ref}" | sed 's/^/  /')
+            branch_desc=$(git notes --ref "branch-descriptions/${branch_name}" show | sed 's/^/  /')
             echo -e "${branch_line}\n${branch_desc}\n"
         else
             echo "${branch_line}"
