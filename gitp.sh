@@ -25,11 +25,12 @@ if [ "$1" == "commit" ]; then
     fi
 
     echo ${GPT4_API_KEY}
+    echo ${git_diff}
     # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
     commit_message=$(curl -s -H "Content-Type: application/json" \
                          -H "Authorization: Bearer ${GPT4_API_KEY}" \
                          -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Generate a commit message based on the following data: Branch: ${branch_name}. Diff: ${git_diff}. Intent: ${intent}.\"}]}" \
-                         https://api.openai.com/v1/chat/completions | jq -r '.choices[0].message.text' | tr -d '\n')
+                         https://api.openai.com/v1/chat/completions | jq -r '.choices[0].message.content' | tr -d '\n')
 
     # Commit with the generated message
     git commit -m "${commit_message}"
