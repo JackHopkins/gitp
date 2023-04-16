@@ -102,10 +102,9 @@ if [ "$1" == "commit" ]; then
         exit 1
     fi
 
-    commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content')
-    IFS=$'\n' read -d '' -r -a commit_message_lines <<< "${commit_message_full}"
-    commit_message_subject="${commit_message_lines[0]}"
-    commit_message_body="${commit_message_lines[@]:1}"
+    commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+    commit_message_subject=$(echo "${commit_message_full}" | awk -F'\n' '{print $1}')
+    commit_message_body=$(echo "${commit_message_full}" | awk -v RS='\n\n' 'NR>1 {print}')
 
     if [ "${append_commit}" == "true" ]; then
         git commit --amend --no-edit --all "${passthrough_flags[@]}"
