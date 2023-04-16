@@ -105,15 +105,15 @@ if [ "$1" == "commit" ]; then
 
     commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
 
-    echo ${commit_message_full}
+    #echo ${commit_message_full}
 
     commit_message_subject=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}')
 
-    echo ${commit_message_subject}
+    #echo ${commit_message_subject}
 
     commit_message_body=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed 's/\\n/\n/g')
 
-    echo ${commit_message_body}
+    #echo ${commit_message_body}
 
     if [ "${append_commit}" == "true" ]; then
         git commit --amend --no-edit --all "${passthrough_flags[@]}"
