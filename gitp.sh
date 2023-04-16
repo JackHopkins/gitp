@@ -21,18 +21,20 @@ if [ "$1" == "commit" ]; then
     if [ -z "${GPT4_API_KEY}" ]; then
         read -p "Enter your GPT-4 API key: " GPT4_API_KEY
         if [ "$(uname)" == "Darwin" ]; then
-            echo "export GPT4_API_KEY=${GPT4_API_KEY}" >> ~/.bash_profile
-            source ~/.bash_profile
+            if [ "$SHELL" == "/bin/zsh" ]; then
+                echo "export GPT4_API_KEY=${GPT4_API_KEY}" >> ~/.zshrc
+                source ~/.zshrc
+            else
+                echo "export GPT4_API_KEY=${GPT4_API_KEY}" >> ~/.bash_profile
+                source ~/.bash_profile
+            fi
         else
             echo "export GPT4_API_KEY=${GPT4_API_KEY}" >> ~/.bashrc
             source ~/.bashrc
         fi
     fi
-    echo $GPT4_API_KEY
-    echo ${branch_name}
-    echo ${git_diff}
-    echo ${intent}
 
+    echo ${GPT4_API_KEY}
     # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
     commit_message=$(curl -s -H "Content-Type: application/json" \
                          -H "Authorization: Bearer ${GPT4_API_KEY}" \
