@@ -1,6 +1,6 @@
 #!/bin/bash
 
-instruction="From the following data, generate a commit subject line, followed by \n\n, and then a full description of the changes"
+instruction="From the following data, generate a commit subject line and then a full description of the changes in the form {subject}\n\n{description}:"
 function generate_branch_name() {
     local intent="$1"
     local existing_branches="$2"
