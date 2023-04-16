@@ -47,7 +47,7 @@ if [ "$1" == "commit" ]; then
     if [ -n "${intent}" ]; then
         gpt_message="${gpt_message} Intent: ${intent}."
     fi
-
+    gpt_message=$(echo "${gpt_message}" | tr -d '\n')
     payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"${gpt_message}\"}]}"
 
     echo ${payload}
