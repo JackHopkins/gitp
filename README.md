@@ -51,7 +51,7 @@ Add instructions for installing and using GitParts
 Added detailed instructions for installing and using GitParts. The README now includes a list of prerequisites, step-by-step installation guide, a comprehensive list of features, and examples of how to use GitParts for committing changes and creating new branches. Additionally, the README now includes a section on how to uninstall GitParts, adding a complete guide for users who want to remove the tool.
 ```
 
-Optionally use the '-i' flag when committing, to better include information relevant to the reader.
+Optionally use the '--intent' (or '-i') flag when committing, to better include information relevant to the reader.
 
 ### Create a new branch
 Use the -i flag followed by a description of the purpose of branch to autogenerate in the style of existing branch names:
