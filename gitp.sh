@@ -121,10 +121,16 @@ if [ "$1" == "commit" ]; then
     fi
 
     # Append the generated commit message to the branch description
+    branch_desc_ref="refs/notes/branch-descriptions/${branch_name}"
     tmp_file=$(mktemp)
-    git notes show "branch-description" 2>/dev/null > "${tmp_file}"
+
+    # Check if the branch description ref exists
+    if git show-ref --quiet --verify "${branch_desc_ref}" 2>/dev/null; then
+        git show "${branch_desc_ref}" > "${tmp_file}"
+    fi
+
     echo -e "\n${commit_message_full}\n" >> "${tmp_file}"
-    git notes add -f -m "$(cat ${tmp_file})" "branch-description"
+    git notes --ref "branch-descriptions/${branch_name}" add -f -F "${tmp_file}"
     rm "${tmp_file}"
 
 elif [ "$1" == "checkout" ]; then
