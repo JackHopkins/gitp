@@ -104,12 +104,14 @@ if [ "$1" == "commit" ]; then
         exit 1
     fi
 
-    commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.content')
+    commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content')
+    commit_message_subject=$(echo "${commit_message_full}" | head -n 1)
+    commit_message_body=$(echo "${commit_message_full}" | tail -n +3)
 
     if [ "${append_commit}" == "true" ]; then
         git commit --amend --no-edit --all "${passthrough_flags[@]}"
     else
-        git commit -m "${commit_message}" "${passthrough_flags[@]}"
+        git commit -m "${commit_message_subject}" -m "${commit_message_body}" "${passthrough_flags[@]}"
     fi
 elif [ "$1" == "checkout" ]; then
     shift
