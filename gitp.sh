@@ -17,13 +17,17 @@ fi
 if [ "$1" == "commit" ]; then
     shift
     intent=""
-    while getopts ":i:" opt; do
+    append_commit="false"
+    while getopts ":i:a" opt; do
         case $opt in
             i)
                 intent="${OPTARG}"
                 ;;
+            a)
+                append_commit="true"
+                ;;
             *)
-                echo "Usage: gitp commit [-i intent]"
+                echo "Usage: gitp commit [-i intent] [-a]"
                 exit 1
                 ;;
         esac
@@ -75,13 +79,16 @@ if [ "$1" == "commit" ]; then
         exit 1
     fi
 
-    echo "${api_response}"
-
     commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\n')
 
     # Commit with the generated message
-    git commit -m "${commit_message}"
+    if [ "${append_commit}" == "true" ]; then
+        # Append changes to the previous commit and reuse the previous message
+        git commit --amend --no-edit --all
+    else
+        git commit -m "${commit_message}"
+    fi
 else
-    echo "Invalid command. Usage: gitp commit [-i intent]"
+    echo "Invalid command. Usage: gitp commit [-i intent] [-a]"
     exit 1
 fi
