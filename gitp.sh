@@ -102,16 +102,9 @@ if [ "$1" == "commit" ]; then
         exit 1
     fi
 
-    commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r' | sed 's/\\n\\n/###DELIMITER###/g')
-    IFS=$'###DELIMITER###' read -ra commit_message_parts <<< "${commit_message_full}"
-    commit_message_subject="${commit_message_parts[0]}"
-    commit_message_body=$(echo "${commit_message_parts[1]}" | sed 's/\\n/\n/g')
-
-    # Process the content to separate subject and body
-    IFS='###DELIMITER###' message_lines=($commit_message_full)
-    commit_message_subject="${message_lines[0]}"
-    commit_message_body="${message_lines[1]}"
-    commit_message_body=$(echo "${commit_message_body}" | sed 's/\\n/\n/g')
+    commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+    commit_message_subject=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}')
+    commit_message_body=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed 's/\\n/\n/g')
 
     if [ "${append_commit}" == "true" ]; then
         git commit --amend --no-edit --all "${passthrough_flags[@]}"
