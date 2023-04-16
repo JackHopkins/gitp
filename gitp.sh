@@ -163,6 +163,7 @@ elif [ "$1" == "branch" ]; then
     fi
 elif [ "$1" == "checkout" ]; then
     shift
+
     intent=""
     branch_flag=false
     passthrough_flags=()
