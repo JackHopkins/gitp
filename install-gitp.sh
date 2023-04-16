@@ -29,4 +29,21 @@ echo "Installing gitp..."
 sudo cp ./gitp.sh /usr/local/bin/gitp
 sudo chmod +x /usr/local/bin/gitp
 
+# Prompt the user for GPT4_API_KEY if it's not already set
+if [ -z "${GPT4_API_KEY}" ]; then
+    read -p "Enter your GPT-4 API key: " GPT4_API_KEY
+    if [ "$(uname)" == "Darwin" ]; then
+        if [ "$SHELL" == "/bin/zsh" ]; then
+            echo "export GPT4_API_KEY=${GPT4_API_KEY}" >> ~/.zshrc
+            source ~/.zshrc
+        else
+            echo "export GPT4_API_KEY=${GPT4_API_KEY}" >> ~/.bash_profile
+            source ~/.bash_profile
+        fi
+    else
+        echo "export GPT4_API_KEY=${GPT4_API_KEY}" >> ~/.bashrc
+        source ~/.bashrc
+    fi
+fi
+
 echo "Installation complete! You can now use the gitp command."
