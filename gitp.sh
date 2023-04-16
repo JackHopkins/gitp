@@ -1,5 +1,6 @@
 #!/bin/bash
 
+instruction="From the following data, generate a commit subject line and then a full description separated by a double new line. "
 function generate_branch_name() {
     local intent="$1"
     local existing_branches="$2"
@@ -82,7 +83,7 @@ if [ "$1" == "commit" ]; then
         fi
     fi
 
-    gpt_message="Generate a commit message based on the following data: Branch: ${branch_name}. Git Diff: ${git_diff}."
+    gpt_message="${instruction}: Branch: ${branch_name}. Git Diff: ${git_diff}."
     if [ -n "${intent}" ]; then
         gpt_message="${gpt_message} Intent: ${intent}."
     fi
