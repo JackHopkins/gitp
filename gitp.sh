@@ -95,8 +95,6 @@ if [ "$1" == "commit" ]; then
                          -d "${payload}" \
                          https://api.openai.com/v1/chat/completions)
 
-    echo ${api_response}
-
     error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
     if [ -n "${error_message}" ]; then
         echo "An error occurred while generating the commit message:"
