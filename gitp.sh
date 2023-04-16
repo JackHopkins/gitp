@@ -47,16 +47,26 @@ if [ "$1" == "commit" ]; then
     if [ -n "${intent}" ]; then
         gpt_message="${gpt_message} Intent: ${intent}."
     fi
-    gpt_message=$(echo "${gpt_message}" | tr -d '\n')
-    payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"${gpt_message}\"}]}"
+    gpt_message=$(echo "${gpt_message}" | tr -d '\n' | jq -sRr @json)
+    payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
 
-    echo ${payload}
-    # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
-    commit_message=$(curl -s -H "Content-Type: application/json" \
+        # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
+    api_response=$(curl -s -H "Content-Type: application/json" \
                          -H "Authorization: Bearer ${GPT4_API_KEY}" \
                          -d "${payload}" \
-                         https://api.openai.com/v1/chat/completions | jq -r '.choices[0].message.text' | tr -d '\n')
+                         https://api.openai.com/v1/chat/completions)
 
+    # Check if the response contains an error
+    error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
+    if [ -n "${error_message}" ]; then
+        echo "An error occurred while generating the commit message:"
+        echo "${error_message}"
+        exit 1
+    fi
+
+    commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.text' | tr -d '\n')
+
+    echo "${commit_message}"
     # Commit with the generated message
     git commit -m "${commit_message}"
 else
