@@ -16,7 +16,7 @@ if [ "$1" == "commit" ]; then
     done
 
     branch_name=$(git symbolic-ref --short -q HEAD)
-    git_diff=$(git diff)
+    git_diff=$(git diff | jq -sRr @json)
 
     if [ -z "${GPT4_API_KEY}" ]; then
         read -p "Enter your GPT-4 API key: " GPT4_API_KEY
@@ -32,6 +32,7 @@ if [ "$1" == "commit" ]; then
                          -d "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Generate a commit message based on the following data: Branch: ${branch_name}. Diff: ${git_diff}. Intent: ${intent}.\"}]}" \
                          https://api.openai.com/v1/chat/completions | jq -r '.choices[0].message.content' | tr -d '\n')
 
+    echo ${commit_message}
     # Commit with the generated message
     git commit -m "${commit_message}"
 else
