@@ -64,6 +64,8 @@ if [ "$1" == "commit" ]; then
         exit 1
     fi
 
+    echo "${api_response}"
+
     commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.text' | tr -d '\n')
 
     echo "${commit_message}"
