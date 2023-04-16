@@ -122,9 +122,9 @@ if [ "$1" == "commit" ]; then
 
     # Append the generated commit message to the branch description
     tmp_file=$(mktemp)
-    git branch --get-description > "${tmp_file}"
+    git notes show "branch-description" 2>/dev/null > "${tmp_file}"
     echo -e "\n${commit_message_full}\n" >> "${tmp_file}"
-    git branch --edit-description < "${tmp_file}"
+    git notes add -f -m "$(cat ${tmp_file})" "branch-description"
     rm "${tmp_file}"
 
 elif [ "$1" == "checkout" ]; then
