@@ -46,4 +46,19 @@ if [ -z "${GPT4_API_KEY}" ]; then
     fi
 fi
 
-echo "Installation complete! You can now use the gitp command."
+# Create an alias for the git command
+echo "Creating an alias for the git command to call gitp instead..."
+if [ "$(uname)" == "Darwin" ]; then
+    if [ "$SHELL" == "/bin/zsh" ]; then
+        echo "alias git='gitp'" >> ~/.zshrc
+        source ~/.zshrc
+    else
+        echo "alias git='gitp'" >> ~/.bash_profile
+        source ~/.bash_profile
+    fi
+else
+    echo "alias git='gitp'" >> ~/.bashrc
+    source ~/.bashrc
+fi
+
+echo "Installation complete! gitp will now intercept all git commands."

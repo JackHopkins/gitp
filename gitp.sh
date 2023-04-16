@@ -146,5 +146,5 @@ elif [ "$1" == "checkout" ]; then
     fi
 
 else
-    git "$@"
+    command git "$@"
 fi
