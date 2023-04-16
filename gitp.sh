@@ -4,7 +4,7 @@ instruction="From the following data, generate a commit subject line and then a 
 function generate_branch_name() {
     local intent="$1"
     local existing_branches="$2"
-    local gpt_message="Generate a new branch name based on the existing branches: ${existing_branches}. Intent: ${intent}."
+    local gpt_message="Generate a new branch name in the style of the existing branches: ${existing_branches}, that describes the purpose of the branch: ${intent}."
     gpt_message=$(echo "${gpt_message}" | tr -d '\n' | jq -sRr @json)
     local payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
 
