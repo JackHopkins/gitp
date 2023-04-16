@@ -138,19 +138,24 @@ elif [ "$1" == "branch" ]; then
     shift
 
     if [ "$#" -eq 0 ]; then
-        branches_output=$(git branch)
+        branches_output=$(git branch --color=always)
         echo "${branches_output}" | while read -r branch_line; do
             branch_name=$(echo "${branch_line}" | sed 's/^\* //;s/^  //')
             branch_desc_ref="refs/notes/branch-descriptions/${branch_name}"
             if git show-ref --quiet --verify "${branch_desc_ref}" 2>/dev/null; then
-                branch_desc=$(git notes --ref "branch-descriptions/${branch_name}" show | sed 's/^/  /')
-                echo -e "${branch_line}\n${branch_desc}\n"
+                branch_desc=$(git notes --ref "branch-descriptions/${branch_name}" show 2>/dev/null | sed 's/^/  /')
+                if [ $? -eq 0 ]; then
+                    echo -e "${branch_line}\n${branch_desc}\n"
+                else
+                    echo "${branch_line}"
+                fi
             else
                 echo "${branch_line}"
             fi
         done
     else
         passthrough_flags=()
+
         while (( "$#" )); do
             passthrough_flags+=( "$1" )
             shift
