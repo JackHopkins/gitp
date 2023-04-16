@@ -28,7 +28,7 @@ if [ "$1" == "commit" ]; then
             source ~/.bashrc
         fi
     fi
-
+    echo $GPT4_API_KEY
     echo ${branch_name}
     echo ${git_diff}
     echo ${intent}
