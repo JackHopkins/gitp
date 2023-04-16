@@ -1,6 +1,7 @@
 #!/bin/bash
 
 instruction="From the following data, generate a commit subject line and then a full description of the changes made in the form {subject}\n\n{description}, not including the git diff or branch:"
+
 function generate_branch_name() {
     local intent="$1"
     local existing_branches="$2"
@@ -133,6 +134,18 @@ if [ "$1" == "commit" ]; then
     git notes --ref "branch-descriptions/${branch_name}" add -f -F "${tmp_file}"
     rm "${tmp_file}"
 
+elif [ "$1" == "branch" ]; then
+        branches_output=$(git branch)
+        echo "${branches_output}" | while read -r branch_line; do
+            branch_name=$(echo "${branch_line}" | sed 's/^\* //;s/^  //')
+            branch_desc_ref="refs/notes/branch-descriptions/${branch_name}"
+            if git show-ref --quiet --verify "${branch_desc_ref}" 2>/dev/null; then
+                branch_desc=$(git show --no-patch --format=%B "${branch_desc_ref}")
+                echo -e "${branch_line}\n  ${branch_desc}\n"
+            else
+                echo "${branch_line}"
+            fi
+        done
 elif [ "$1" == "checkout" ]; then
     shift
     intent=""
