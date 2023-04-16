@@ -24,6 +24,7 @@ if [ "$1" == "commit" ]; then
         source ~/.bashrc
     fi
 
+    echo ${GPT4_API_KEY}
     # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
     commit_message=$(curl -s -H "Content-Type: application/json" \
                          -H "Authorization: Bearer ${GPT4_API_KEY}" \
