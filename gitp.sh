@@ -20,7 +20,7 @@ function generate_branch_name() {
         exit 1
     fi
 
-    local branch_name=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\n')
+    local branch_name=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\n' | tr -d '"')
     echo "${branch_name}"
 }
 
