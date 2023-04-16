@@ -15,6 +15,7 @@ if [ "$1" == "commit" ]; then
         esac
     done
 
+
     branch_name=$(git symbolic-ref --short -q HEAD)
     git_diff=$(git diff)
 
