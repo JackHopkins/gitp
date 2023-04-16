@@ -26,7 +26,7 @@ if [ "$1" == "commit" ]; then
         read -p "Enter your GPT-4 API key: " GPT4_API_KEY
         echo "${GPT4_API_KEY}" > "${GPT4_API_KEY_FILE}"
     fi
-
+    echo "Running"
     echo ${GPT4_API_KEY}
     # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
     commit_message=$(curl -s -H "Content-Type: application/json" \
