@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# Check if the GPT4_API_KEY environment variable is not set
 if [ -z "${GPT4_API_KEY}" ]; then
-    # Load the appropriate profile file for the current shell
     if [ "$(uname)" == "Darwin" ]; then
         if [ "$SHELL" == "/bin/zsh" ]; then
             source ~/.zshrc
@@ -18,17 +16,21 @@ if [ "$1" == "commit" ]; then
     shift
     intent=""
     append_commit="false"
-    while getopts ":i:a" opt; do
-        case $opt in
-            i)
-                intent="${OPTARG}"
+    passthrough_flags=()
+
+    while (( "$#" )); do
+        case "$1" in
+            -i|--intent)
+                intent="$2"
+                shift 2
                 ;;
-            a)
+            -a|--append)
                 append_commit="true"
+                shift
                 ;;
             *)
-                echo "Usage: gitp commit [-i intent] [-a]"
-                exit 1
+                passthrough_flags+=( "$1" )
+                shift
                 ;;
         esac
     done
@@ -57,7 +59,6 @@ if [ "$1" == "commit" ]; then
         fi
     fi
 
-    # Prepare the GPT message content
     gpt_message="Generate a commit message based on the following data: Branch: ${branch_name}. Git Diff: ${git_diff}."
     if [ -n "${intent}" ]; then
         gpt_message="${gpt_message} Intent: ${intent}."
@@ -65,13 +66,11 @@ if [ "$1" == "commit" ]; then
     gpt_message=$(echo "${gpt_message}" | tr -d '\n' | jq -sRr @json)
     payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
 
-        # Pass the diff, branch name, and intent to GPT-3.5-turbo to generate the commit message
     api_response=$(curl -s -H "Content-Type: application/json" \
                          -H "Authorization: Bearer ${GPT4_API_KEY}" \
                          -d "${payload}" \
                          https://api.openai.com/v1/chat/completions)
 
-    # Check if the response contains an error
     error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
     if [ -n "${error_message}" ]; then
         echo "An error occurred while generating the commit message:"
@@ -81,14 +80,12 @@ if [ "$1" == "commit" ]; then
 
     commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\n')
 
-    # Commit with the generated message
     if [ "${append_commit}" == "true" ]; then
-        # Append changes to the previous commit and reuse the previous message
-        git commit --amend --no-edit --all
+        git commit --amend --no-edit --all "${passthrough_flags[@]}"
     else
-        git commit -m "${commit_message}"
+        git commit -m "${commit_message}" "${passthrough_flags[@]}"
     fi
 else
-    echo "Invalid command. Usage: gitp commit [-i intent] [-a]"
+    echo "Invalid command. Usage: gitp commit [-i intent] [-a] [other git commit flags]"
     exit 1
 fi
