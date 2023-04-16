@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Check if the GPT4_API_KEY environment variable is not set
+if [ -z "${GPT4_API_KEY}" ]; then
+    # Load the appropriate profile file for the current shell
+    if [ "$(uname)" == "Darwin" ]; then
+        if [ "$SHELL" == "/bin/zsh" ]; then
+            source ~/.zshrc
+        else
+            source ~/.bash_profile
+        fi
+    else
+        source ~/.bashrc
+    fi
+fi
+
 if [ "$1" == "commit" ]; then
     shift
     intent=""
@@ -68,7 +82,6 @@ if [ "$1" == "commit" ]; then
 
     commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\n')
 
-    echo "${commit_message}"
     # Commit with the generated message
     git commit -m "${commit_message}"
 else
