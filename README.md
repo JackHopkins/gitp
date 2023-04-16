@@ -46,10 +46,14 @@ git commit
 ```
 
 ```stdout
-Improve branch naming message for better clarity
+Add instructions for installing and using GitParts
 
-This commit improves the message used to generate a new branch name in the gitp.sh script. Previously, the message only stated the existing branches and intent, but the new message adds a description of the intended purpose of the new branch. This change makes the message more clear and comprehensive.
+Added detailed instructions for installing and using GitParts. The README now includes a list of prerequisites, step-by-step installation guide, a comprehensive list of features, and examples of how to use GitParts for committing changes and creating new branches. Additionally, the README now includes a section on how to uninstall GitParts, adding a complete guide for users who want to remove the tool.
 ```
+
+Optionally use the '-i' flag when committing, to better include information relevant to the reader.
+
+
 
 ### Create a new branch
 Use the -i flag followed by a description of the purpose of branch to autogenerate in the style of existing branch names:
