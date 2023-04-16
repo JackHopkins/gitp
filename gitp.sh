@@ -87,7 +87,7 @@ if [ "$1" == "commit" ]; then
     if [ -n "${intent}" ]; then
         gpt_message="${gpt_message} Intent: ${intent}."
     fi
-    gpt_message=$(echo "${gpt_message}" | tr -d '\n' | jq -sRr @json)
+    gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
     payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
 
     api_response=$(curl -s -H "Content-Type: application/json" \
@@ -104,7 +104,7 @@ if [ "$1" == "commit" ]; then
         exit 1
     fi
 
-    commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\n')
+    commit_message=$(echo "${api_response}" | jq -r '.choices[0].message.content')
 
     if [ "${append_commit}" == "true" ]; then
         git commit --amend --no-edit --all "${passthrough_flags[@]}"
