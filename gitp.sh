@@ -64,7 +64,7 @@ function improve_commit_message() {
 
     # Open the editor for the user to review and edit the message
     # Use the 'script' command to run the editor in a new pseudo-terminal
-    script -q -e -c "${VISUAL:-${EDITOR:-vi}} ${tmp_file}"
+    script -q -c "${EDITOR:-vi} ${tmp_file}"
 
     # Read the updated message from the temporary file
     local updated_message=$(<"${tmp_file}")
@@ -238,7 +238,7 @@ elif [ "$1" == "log" ]; then
 
         # Iterate through each commit hash
         while read -r commit_hash; do
-        # Call the function to improve the commit message
+            # Call the function to improve the commit message
             improve_commit_message "${commit_hash}" "${branch_name}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"
         done <<< "${commit_hashes}"
     else
