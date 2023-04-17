@@ -32,8 +32,7 @@ function generate_commit_message() {
     local commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
 
     # Return the generated commit message subject and body
-    echo "${commit_message_subject}"
-    echo "${commit_message_body}"
+    echo "${commit_message_subject}\n\n${commit_message_body}"
 }
 
 function generate_branch_name() {
