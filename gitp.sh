@@ -239,6 +239,11 @@ elif [ "$1" == "log" ]; then
                 backfill_flag=true
                 shift
                 ;;
+
+            --revert_backfill)
+                revert_backfill_flag=true
+                shift
+                ;;
             *)
                 passthrough_flags+=( "$1" )
                 shift
@@ -269,10 +274,37 @@ elif [ "$1" == "log" ]; then
                 combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
 
                 # Amend the commit with the combined message
-                #git rebase --interactive --autosquash -Xtheirs "${commit_hash}^"
-                #git commit --amend -m "${combined_message}"
-                #git rebase --continue
+                git rebase --interactive --autosquash -Xtheirs "${commit_hash}^"
+                git commit --amend -m "${combined_message}"
+                git rebase --continue
                 echo ${combined_message}
+            done <<< "${commit_hashes}"
+        fi
+    elif [ "${revert_backfill_flag}" == "true" ]; then
+        echo "Warning: Reverting backfilled commit messages will rewrite commit history."
+        echo "         Do not perform this operation on branches that have been pushed to a remote repository."
+        read -p "Are you sure you want to proceed? (y/n): " confirm
+        if [ "${confirm}" == "y" ]; then
+            # Get the list of commit hashes
+            commit_hashes=$(git log --pretty=format:"%H")
+
+            # Iterate through each commit hash
+            while read -r commit_hash; do
+                # Get the original commit message
+                original_message=$(git log -n 1 --pretty=format:"%B" "${commit_hash}")
+
+                # Check if the "###RAW###" marker exists
+                if [[ "${original_message}" == *"###RAW###"* ]]; then
+                    # Extract the raw message after the "###RAW###" marker
+                    raw_message=$(echo "${original_message}" | awk '/###RAW###/{flag=1;next} flag')
+
+                    # Amend the commit with the raw message
+                    git rebase --interactive --autosquash -Xtheirs "${commit_hash}^"
+                    git commit --amend -m "${raw_message}"
+                    git rebase --continue
+                else
+                    echo "Warning: Commit ${commit_hash} does not have a ###RAW### delimiter. Skipping."
+                fi
             done <<< "${commit_hashes}"
         fi
     else

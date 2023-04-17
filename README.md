@@ -3,10 +3,13 @@
 GitParts is a drop-in replacement for Git which aims to improve the _clarity_ and _consistency_ of your repos.
 GitParts auto-generates commit messages and branch names by leveraging the power of GPT, a family of advanced language models developed by OpenAI, to autogenerate commit messages and branch names.
 
+No more `asdasdg` commit messages. Make each commit description count.
+
 ## Features
 - Autogenerate detailed and relevant commit messages with subject and description based on your staged changes. Optionally prompt additional context with the --intent flag.
 - Autogenerate branch names from your intent and existing branch naming style.
 - Display branch descriptions alongside branch names when listing branches.
+- Backfill (and revert) your historic git commits with additional detail.
 - *Full drop-in replacement for Git*.
 
 ## Prerequisites
@@ -18,7 +21,7 @@ GitParts auto-generates commit messages and branch names by leveraging the power
 
 ```bash
 # Clone the Git repository
-git clone https://github.com/Noddybear/parts.git
+git clone https://github.com/JackHopkins/parts.git
 
 # Change to the cloned directory:
 cd parts
@@ -90,4 +93,4 @@ chmod +x uninstall-gitp.sh
 
 ## Experimental Features
 
-Backfilling Git Log
+- Backfilling Git Log to include auto-generated subject and descriptions about the commit.
