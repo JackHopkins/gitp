@@ -60,10 +60,11 @@ function improve_commit_message() {
 
     # Create a temporary file to store the combined message
     local tmp_file=$(mktemp)
-    echo "${combined_message}" > "${tmp_file}"
+    echo -e "${combined_message}" > "${tmp_file}"
 
     # Open the editor for the user to review and edit the message
-    ${VISUAL:-${EDITOR:-vi}} "${tmp_file}"
+    # Use the 'script' command to run the editor in a new pseudo-terminal
+    script -q -e -c "${VISUAL:-${EDITOR:-vi}} ${tmp_file}"
 
     # Read the updated message from the temporary file
     local updated_message=$(<"${tmp_file}")
