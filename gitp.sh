@@ -1,6 +1,40 @@
 #!/bin/bash
 
-instruction="From the following data, generate a commit subject line and then a full description of the changes made in the form {subject}\n\n{description}, not including the git diff or branch:"
+function generate_commit_message() {
+    local branch_name="$1"
+    local git_diff="$2"
+    local intent="$3"
+    local GPT_MODEL_CHOICE="$4"
+    local GPT4_API_KEY="$5"
+
+    local instruction="From the following data, generate a commit subject line and then a full description of the changes made in the form {subject}\n\n{description}, not including the git diff or branch:"
+    local gpt_message="${instruction}: Branch: ${branch_name}. Git Diff: ${git_diff}."
+    if [ -n "${intent}" ]; then
+        gpt_message="${gpt_message} Intent: ${intent}."
+    fi
+    gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
+    local payload="{\"model\": \"${GPT_MODEL_CHOICE}\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
+
+    local api_response=$(curl -s -H "Content-Type: application/json" \
+                             -H "Authorization: Bearer ${GPT4_API_KEY}" \
+                             -d "${payload}" \
+                             https://api.openai.com/v1/chat/completions)
+
+    local error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
+    if [ -n "${error_message}" ]; then
+        echo "An error occurred while generating the commit message:"
+        echo "${error_message}"
+        exit 1
+    fi
+
+    local commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+    local commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')")
+    local commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
+
+    # Return the generated commit message subject and body
+    echo "${commit_message_subject}"
+    echo "${commit_message_body}"
+}
 
 function generate_branch_name() {
     local intent="$1"
@@ -89,28 +123,7 @@ if [ "$1" == "commit" ]; then
         fi
     fi
 
-    gpt_message="${instruction}: Branch: ${branch_name}. Git Diff: ${git_diff}."
-    if [ -n "${intent}" ]; then
-        gpt_message="${gpt_message} Intent: ${intent}."
-    fi
-    gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
-    payload="{\"model\": \"${GPT_MODEL_CHOICE}\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
-
-    api_response=$(curl -s -H "Content-Type: application/json" \
-                         -H "Authorization: Bearer ${GPT4_API_KEY}" \
-                         -d "${payload}" \
-                         https://api.openai.com/v1/chat/completions)
-
-    error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
-    if [ -n "${error_message}" ]; then
-        echo "An error occurred while generating the commit message:"
-        echo "${error_message}"
-        exit 1
-    fi
-
-    commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
-    commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')")
-    commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
+    read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
     # If the edit_message flag is set, open the Git editor
     if [ "${edit_message}" == "true" ]; then
@@ -250,10 +263,10 @@ elif [ "$1" == "log" ]; then
                 git_diff=$(git diff "${commit_hash}^" "${commit_hash}" | jq -sRr @json)
 
                 # Generate the commit message using GPT (similar to the 'commit' section)
-                # ...
+                read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
                 # Combine the generated message with the original message
-                combined_message="${generated_message}\n\n${original_message}"
+                combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
 
                 # Amend the commit with the combined message
                 #git rebase --interactive --autosquash -Xtheirs "${commit_hash}^"
