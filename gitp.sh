@@ -28,8 +28,8 @@ function generate_commit_message() {
     fi
 
     local commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
-    local commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')")
-    local commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
+    local commit_message_subject="${commit_message_full%%$'\n\n'*}"  # Extract the subject (part before the first double newline)
+    local commit_message_body="${commit_message_full#*$'\n\n'}"     # Extract the body (part after the first double newline)
 
     # Return the generated commit message subject and body
     echo "${commit_message_subject}\n${commit_message_body}"
