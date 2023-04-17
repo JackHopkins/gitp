@@ -60,4 +60,4 @@ else
     source ~/.bashrc
 fi
 
-echo "Installation complete! gitp will now intercept all git commands."
+echo "Installation complete. gitp will now intercept all git commands."

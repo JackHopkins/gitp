@@ -42,6 +42,7 @@ if [ "$1" == "commit" ]; then
     intent=""
     append_commit="false"
     passthrough_flags=()
+    edit_message="false"  # New flag to indicate whether to edit the message
 
     while (( "$#" )); do
         case "$1" in
@@ -51,6 +52,10 @@ if [ "$1" == "commit" ]; then
                 ;;
             -a|--append)
                 append_commit="true"
+                shift
+                ;;
+            -e|--edit)
+                edit_message="true"
                 shift
                 ;;
             *)
@@ -107,14 +112,30 @@ if [ "$1" == "commit" ]; then
     commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')")
     commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
 
-    # If the commit message body is empty, only use the subject for the commit
-    if [ -z "${commit_message_body}" ]; then
-        git commit -m "${commit_message_subject}" "${passthrough_flags[@]}"
-    elif [ "${append_commit}" == "true" ]; then
-        git commit --amend --no-edit --all "${passthrough_flags[@]}"
+    # If the edit_message flag is set, open the Git editor
+    if [ "${edit_message}" == "true" ]; then
+        tmp_file=$(mktemp)
+        echo "${commit_message_subject}" > "${tmp_file}"
+        if [ -n "${commit_message_body}" ]; then
+            echo -e "\n${commit_message_body}" >> "${tmp_file}"
+        fi
+        if [ "${append_commit}" == "true" ]; then
+            git commit "${passthrough_flags[@]}" -e --amend -F "${tmp_file}"
+        else
+            git commit "${passthrough_flags[@]}" -e -F "${tmp_file}"
+        fi
+        rm "${tmp_file}"
     else
-        git commit -m "${commit_message_subject}" -m "${commit_message_body}" "${passthrough_flags[@]}"
+        # If the commit message body is empty, only use the subject for the commit
+        if [ -z "${commit_message_body}" ]; then
+            git commit -m "${commit_message_subject}" "${passthrough_flags[@]}"
+        elif [ "${append_commit}" == "true" ]; then
+            git commit --amend --no-edit --all "${passthrough_flags[@]}"
+        else
+            git commit -m "${commit_message_subject}" -m "${commit_message_body}" "${passthrough_flags[@]}"
+        fi
     fi
+
 
     # Append the generated commit message to the branch description
     branch_desc_ref="refs/notes/branch-descriptions/${branch_name}"

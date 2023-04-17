@@ -2,6 +2,8 @@
 
 GitParts is a drop-in replacement for Git which aims to improve the _clarity_ and _consistency_ in your repos.
 
+
+
 ## Features
 - Autogenerate best-practise commit messages with subject and description based on your staged changes.
 - Autogenerate branch names from your intent and existing branch naming style.
