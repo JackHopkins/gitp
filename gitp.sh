@@ -191,6 +191,8 @@ if [ "$1" == "commit" ]; then
 elif [ "$1" == "log" ]; then
     shift
 
+    shift
+
     backfill_flag="false"
     num_commits=""
     passthrough_flags=()
@@ -216,7 +218,11 @@ elif [ "$1" == "log" ]; then
     # Check if the backfill flag is set
     if [ "${backfill_flag}" == "true" ]; then
         # Get the list of commit hashes (up to the -n provided)
-        commit_hashes=$(git log -n "${num_commits}" --pretty=format:"%H")
+        if [ -n "${num_commits}" ]; then
+            commit_hashes=$(git log -n "${num_commits}" --pretty=format:"%H")
+        else
+            commit_hashes=$(git log --pretty=format:"%H")
+        fi
 
         # Iterate through each commit hash
         while read -r commit_hash; do
