@@ -94,7 +94,7 @@ if [ "$1" == "commit" ]; then
         gpt_message="${gpt_message} Intent: ${intent}."
     fi
     gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
-    payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
+    payload="{\"model\": \"${GPT_MODEL_CHOICE}\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
 
     api_response=$(curl -s -H "Content-Type: application/json" \
                          -H "Authorization: Bearer ${GPT4_API_KEY}" \

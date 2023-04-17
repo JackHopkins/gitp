@@ -1,14 +1,13 @@
 # GitParts (gitp)
 
 GitParts is a drop-in replacement for Git which aims to improve the _clarity_ and _consistency_ in your repos.
-
-
+GitParts leverages the power of GPT, an family of advanced language models developed by OpenAI, to autogenerate commit messages and branch names.
 
 ## Features
-- Autogenerate best-practise commit messages with subject and description based on your staged changes.
+- Autogenerate best-practice commit messages with subject and description based on your staged changes. Optionally provide additional context with the --intent flag.
 - Autogenerate branch names from your intent and existing branch naming style.
 - Display branch descriptions alongside branch names when listing branches.
-- *Full drop-in replacement for Git*.
+- Full drop-in replacement for Git.
 
 ## Prerequisites
 - OpenAI API key
@@ -46,12 +45,23 @@ git commit
 ```
 
 ```stdout
-Add instructions for installing and using GitParts
+Author: Jack Hopkins <jack.hopkins@me.com>
+Date:   Sun Apr 16 22:51:48 2023 -0400
 
-Added detailed instructions for installing and using GitParts. The README now includes a list of prerequisites, step-by-step installation guide, a comprehensive list of features, and examples of how to use GitParts for committing changes and creating new branches. Additionally, the README now includes a section on how to uninstall GitParts, adding a complete guide for users who want to remove the tool.
+    Add instructions for installing and using GitParts
+
+    Added detailed instructions for installing and using GitParts. The README now includes a list of prerequisites, step-by-step installation guide, a comprehensive list of features, and examples of how to use GitParts for committing changes and creating new branches. Additionally, the README now includes a section on how to uninstall GitParts, adding a complete guide for users who want to remove the tool.
 ```
 
-Optionally use the '--intent' (or '-i') flag when committing, to better include information relevant to the reader.
+To check and edit your message before it is committed, optionally use the new '--edit' (or '-e') flag to edit in you Git editor of choice (usually Vi).
+
+```bash
+git add .
+git commit -e
+```
+
+To better include information relevant to the reader, optionally use the '--intent' (or '-i') flag when committing to prompt GPT.
+
 
 ### Create a new branch
 Use the -i flag followed by a description of the purpose of branch to autogenerate in the style of existing branch names:
