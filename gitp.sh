@@ -126,12 +126,13 @@ if [ "$1" == "commit" ]; then
     #IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
         # Generate the commit message using GPT (similar to the 'commit' section)
+    IFS=$'\n'
     if ! read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"); then
         echo "An error occurred while generating the commit message:"
         echo "${commit_message_subject}"  # The error message is stored in the 'commit_message_subject' variable
         exit 1
     fi
-
+    unset IFS
 
     echo "Blah"
     echo ${commit_message_subject}
@@ -282,13 +283,15 @@ elif [ "$1" == "log" ]; then
                 # Generate the commit message using GPT (similar to the 'commit' section)
                 #IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
+
                 # Generate the commit message using GPT (similar to the 'commit' section)
+                IFS=$'\n'
                 if ! read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"); then
                     echo "An error occurred while generating the commit message:"
                     echo "${commit_message_subject}"  # The error message is stored in the 'commit_message_subject' variable
                     exit 1
                 fi
-
+                unset IFS
                 # Combine the generated message with the original message
                 combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
 
