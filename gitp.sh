@@ -53,21 +53,9 @@ function improve_commit_message() {
     local git_diff=$(git diff "${commit_hash}^" "${commit_hash}" | jq -sRr @json)
 
     # Generate the commit message using GPT (similar to the 'commit' section)
-
     IFS=$'\n'
-    commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
-    echo ${commit_message_output}
-    if [ $? -ne 0 ]; then
-        echo "An error occurred while generating the commit message:"
-        echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
-        exit 1
-    fi
+    read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
     unset IFS
-
-    # Assign the elements of the array to the subject and body variables
-    commit_message_subject="${commit_message_output[0]}"
-    commit_message_body="${commit_message_output[1]}"
-
     # Combine the generated message with the original message
     local combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
 
