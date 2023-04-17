@@ -239,7 +239,7 @@ elif [ "$1" == "log" ]; then
 
         # Iterate through each commit hash
         while read -r commit_hash; do
-            # Call the function to improve the commit message
+        # Call the function to improve the commit message
             improve_commit_message "${commit_hash}" "${branch_name}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"
         done <<< "${commit_hashes}"
     else
