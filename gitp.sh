@@ -104,11 +104,13 @@ if [ "$1" == "commit" ]; then
     fi
 
     commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
-    echo ${commit_message_full}
-    commit_message_subject=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')
-    commit_message_body=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//' | sed 's/\\n/\n/g')
+    commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')")
+    commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
 
-    if [ "${append_commit}" == "true" ]; then
+    # If the commit message body is empty, only use the subject for the commit
+    if [ -z "${commit_message_body}" ]; then
+        git commit -m "${commit_message_subject}" "${passthrough_flags[@]}"
+    elif [ "${append_commit}" == "true" ]; then
         git commit --amend --no-edit --all "${passthrough_flags[@]}"
     else
         git commit -m "${commit_message_subject}" -m "${commit_message_body}" "${passthrough_flags[@]}"
