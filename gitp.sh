@@ -136,13 +136,10 @@ if [ "$1" == "commit" ]; then
 
     commit_message_subject="${commit_message_output[0]}"
     commit_message_body="${commit_message_output[1]}"
-    echo "Debug: Read Subject: ${commit_message_subject}" >&2
-    echo "Debug: Read Body: ${commit_message_body}" >&2
+    #echo "Debug: Read Subject: ${commit_message_subject}" >&2
+    #echo "Debug: Read Body: ${commit_message_body}" >&2
     unset IFS
 
-    echo "Blah"
-    echo ${commit_message_subject}
-    echo ${commit_message_body}
 
     # If the edit_message flag is set, open the Git editor
     if [ "${edit_message}" == "true" ]; then
@@ -273,6 +270,7 @@ elif [ "$1" == "log" ]; then
     if [ "${backfill_flag}" == "true" ]; then
         echo "Warning: Backfilling commit messages will rewrite commit history."
         echo "         Do not perform this operation on branches that have been pushed to a remote repository."
+        echo "         This may take a long time."
         read -p "Are you sure you want to proceed? (y/n): " confirm
         if [ "${confirm}" == "y" ]; then
             # Get the list of commit hashes
@@ -292,11 +290,17 @@ elif [ "$1" == "log" ]; then
 
                 # Generate the commit message using GPT (similar to the 'commit' section)
                 IFS=$'\n'
-                if ! read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"); then
+                commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+                if [ $? -ne 0 ]; then
                     echo "An error occurred while generating the commit message:"
-                    echo "${commit_message_subject}"  # The error message is stored in the 'commit_message_subject' variable
+                    echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
                     exit 1
                 fi
+
+                commit_message_subject="${commit_message_output[0]}"
+                commit_message_body="${commit_message_output[1]}"
+                #echo "Debug: Read Subject: ${commit_message_subject}" >&2
+                #echo "Debug: Read Body: ${commit_message_body}" >&2
                 unset IFS
                 # Combine the generated message with the original message
                 combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
