@@ -123,7 +123,7 @@ if [ "$1" == "commit" ]; then
         fi
     fi
 
-    read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+    IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
     # If the edit_message flag is set, open the Git editor
     if [ "${edit_message}" == "true" ]; then
@@ -268,7 +268,7 @@ elif [ "$1" == "log" ]; then
                 git_diff=$(git diff "${commit_hash}^" "${commit_hash}" | jq -sRr @json)
 
                 # Generate the commit message using GPT (similar to the 'commit' section)
-                read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+                IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
                 # Combine the generated message with the original message
                 combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
