@@ -62,12 +62,18 @@ function improve_commit_message() {
     local tmp_file=$(mktemp)
     echo -e "${combined_message}" > "${tmp_file}"
 
-    # Open the editor for the user to review and edit the message
-    #GIT_EDITOR="${EDITOR:-vi} -f" git commit --amend -e -F "${tmp_file}"
-    GIT_EDITOR="sh -c '${EDITOR:-vi} -f \$1' --" git commit --amend -e -F "${tmp_file}"
+    # Create a custom script to open the editor in the foreground
+    local editor_script=$(mktemp)
+    echo "#!/bin/bash" > "${editor_script}"
+    echo "${EDITOR:-vi} -f \"\$1\"" >> "${editor_script}"
+    chmod +x "${editor_script}"
 
-    # Clean up the temporary file
+    # Open the editor for the user to review and edit the message
+    GIT_EDITOR="${editor_script}" git commit --amend -e -F "${tmp_file}"
+
+    # Clean up the temporary files
     rm "${tmp_file}"
+    rm "${editor_script}"
 }
 
 
