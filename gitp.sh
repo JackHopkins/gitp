@@ -132,11 +132,15 @@ if [ "$1" == "commit" ]; then
 
         # Generate the commit message using GPT (similar to the 'commit' section)
     IFS=$'\n'
-    if ! read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"); then
+    commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+    if [ $? -ne 0 ]; then
         echo "An error occurred while generating the commit message:"
-        echo "${commit_message_subject}"  # The error message is stored in the 'commit_message_subject' variable
+        echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
         exit 1
     fi
+
+    commit_message_subject="${commit_message_output[0]}"
+    commit_message_body="${commit_message_output[1]}"
     echo "Debug: Read Subject: ${commit_message_subject}" >&2
     echo "Debug: Read Body: ${commit_message_body}" >&2
     unset IFS
