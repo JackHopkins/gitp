@@ -33,6 +33,7 @@ function generate_commit_message() {
 
     # Return the generated commit message subject and body
     echo -e "${commit_message_subject}\n${commit_message_body}"
+    return 0
 }
 
 function generate_branch_name() {
@@ -122,7 +123,14 @@ if [ "$1" == "commit" ]; then
         fi
     fi
 
-    IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+    #IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+
+        # Generate the commit message using GPT (similar to the 'commit' section)
+    if ! read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"); then
+        echo "An error occurred while generating the commit message:"
+        echo "${commit_message_subject}"  # The error message is stored in the 'commit_message_subject' variable
+        exit 1
+    fi
 
 
     echo "Blah"
@@ -272,7 +280,14 @@ elif [ "$1" == "log" ]; then
                 git_diff=$(git diff "${commit_hash}^" "${commit_hash}" | jq -sRr @json)
 
                 # Generate the commit message using GPT (similar to the 'commit' section)
-                IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+                #IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+
+                # Generate the commit message using GPT (similar to the 'commit' section)
+                if ! read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"); then
+                    echo "An error occurred while generating the commit message:"
+                    echo "${commit_message_subject}"  # The error message is stored in the 'commit_message_subject' variable
+                    exit 1
+                fi
 
                 # Combine the generated message with the original message
                 combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
