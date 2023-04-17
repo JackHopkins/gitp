@@ -31,13 +31,14 @@ function generate_commit_message() {
     local commit_message_subject="${commit_message_full%%$'\n\n'*}"  # Extract the subject (part before the first double newline)
     local commit_message_body="${commit_message_full#*$'\n\n'}"     # Extract the body (part after the first double newline)
 
-    echo "Blee"
-    echo ${commit_message_subject}
-    echo ${commit_message_body}
+    echo "Debug: Subject: ${commit_message_subject}" >&2
+    echo "Debug: Body: ${commit_message_body}" >&2
 
     # Return the generated commit message subject and body
-    echo -e "${commit_message_subject}\n${commit_message_body}"
-    return 0
+    #-e
+    echo "${commit_message_subject}"
+    echo "${commit_message_body}"
+    #return 0
 }
 
 function generate_branch_name() {
@@ -136,6 +137,8 @@ if [ "$1" == "commit" ]; then
         echo "${commit_message_subject}"  # The error message is stored in the 'commit_message_subject' variable
         exit 1
     fi
+    echo "Debug: Read Subject: ${commit_message_subject}" >&2
+    echo "Debug: Read Body: ${commit_message_body}" >&2
     unset IFS
 
     echo "Blah"
