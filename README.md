@@ -3,11 +3,11 @@
 GitParts is a suite of drop-in Git automation tools designed to accelerate your development workflow.
 
 ## Features
-- Auto-generate comprehensive commit messages (with subject and description) based on your staged changes.
-- Automatically generate branch names from your intent and existing branch naming style.
-- Display branch descriptions alongside branch names when listing branches.
-- Back-fill your historic logs to enhance your git tree.
-- *Full drop-in replacement for Git*.
+- [ git commit ] Auto-generate comprehensive commit messages (with subject and description) based on your staged changes. Never commit 'asdkjldgq' again.
+- [ git checkout -i ] Automatically generate branch names from your intent and existing branch naming style.
+- [ git branch ] Display branch descriptions alongside branch names when listing branches.
+- [ git log --backfill ] Back-fill your logs to enhance the quality of commit messages in your git tree.
+- [ git * ] Full drop-in replacement for Git.
 
 ## Prerequisites
 - OpenAI API key
@@ -26,10 +26,10 @@ git clone https://github.com/JackHopkins/parts.git
 cd parts
 
 # Make the installation script executable:
-chmod +x install-gitp.sh
+chmod +x install.gitp.sh
 
 # Run the installation script:
-./install-gitp.sh
+./install.gitp.sh
 ```
 
 The script will install any necessary dependencies (such as jq), copy the gitp script to /usr/local/bin, set up your GPT API key as an environment variable, and create an alias for the git command to call gitp instead.
@@ -66,15 +66,15 @@ Switched to a new branch 'feature/new-user-authentication'
 ```
 
 
-## Uninstalling
+## Uninstall
 
 ```bash
 #Change to the cloned directory:
 cd parts
 
 # Make the un-installation script executable:
-chmod +x uninstall-gitp.sh
+chmod +x uninstall.gitp.sh
 
 # Run the uninstallation script:
-./uninstall-gitp.sh
+./uninstall.gitp.sh
 ```

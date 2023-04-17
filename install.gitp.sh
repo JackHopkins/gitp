@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Save this file as 'install-gitp.sh' and make it executable (chmod +x install-gitp.sh)
-
 # Function to check and install a package
 check_and_install() {
     package=$1
