@@ -55,11 +55,24 @@ function improve_commit_message() {
     # Generate the commit message using GPT (similar to the 'commit' section)
     read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
-    # Amend the commit with the new message
-    git checkout "${commit_hash}"
-    git commit --amend -m "${commit_message_subject}" -m "${commit_message_body}"
+    # Combine the generated message with the original message
+    local combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
 
-    echo "Commit message updated successfully!"
+    # Create a temporary file to store the combined message
+    local tmp_file=$(mktemp)
+    echo "${combined_message}" > "${tmp_file}"
+
+    # Open the editor for the user to review and edit the message
+    ${VISUAL:-${EDITOR:-vi}} "${tmp_file}"
+
+    # Read the updated message from the temporary file
+    local updated_message=$(<"${tmp_file}")
+
+    # Amend the commit with the updated message
+    git commit --amend -m "${updated_message}"
+
+    # Clean up the temporary file
+    rm "${tmp_file}"
 }
 
 function generate_branch_name() {
