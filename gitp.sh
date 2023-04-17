@@ -204,8 +204,6 @@ if [ "$1" == "commit" ]; then
 elif [ "$1" == "log" ]; then
     shift
 
-    shift
-
     backfill_flag="false"
     num_commits=""
     passthrough_flags=()
