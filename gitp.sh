@@ -104,6 +104,7 @@ if [ "$1" == "commit" ]; then
     fi
 
     commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+    echo ${commit_message_full}
     commit_message_subject=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')
     commit_message_body=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//' | sed 's/\\n/\n/g')
 
