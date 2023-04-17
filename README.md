@@ -20,7 +20,7 @@ GitParts is a suite of drop-in Git automation tools designed to accelerate your 
 git clone https://github.com/JackHopkins/parts.git
 
 # Change to the cloned directory:
-cd parts
+cd gitp
 
 # Make the installation script executable:
 chmod +x install.gitp.sh
