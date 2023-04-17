@@ -1,21 +1,32 @@
 #!/bin/bash
 
 # Save this file as 'install-gitp.sh' and make it executable (chmod +x install-gitp.sh)
-# Check if jq is installed and install it if necessary
-if ! command -v jq &> /dev/null; then
-    echo "jq is not installed. Installing jq..."
-    if command -v apt-get &> /dev/null; then
-        sudo apt-get update
-        sudo apt-get install -y jq
-    elif command -v yum &> /dev/null; then
-        sudo yum install -y jq
-    elif command -v brew &> /dev/null; then
-        brew install jq
-    else
-        echo "Error: Package manager not supported. Please install jq manually."
-        exit 1
+
+# Function to check and install a package
+check_and_install() {
+    package=$1
+    if ! command -v "$package" &> /dev/null; then
+        echo "$package is not installed. Installing $package..."
+        if command -v apt-get &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y "$package"
+        elif command -v yum &> /dev/null; then
+            sudo yum install -y "$package"
+        elif command -v brew &> /dev/null; then
+            brew install "$package"
+        else
+            echo "Error: Package manager not supported. Please install $package manually."
+            exit 1
+        fi
     fi
-fi
+}
+
+# Check if the required dependencies are installed and install them if necessary
+check_and_install jq
+check_and_install git
+check_and_install curl
+check_and_install awk
+check_and_install sed
 
 # Check if gitp.sh exists in the current directory
 if [ ! -f "./gitp.sh" ]; then

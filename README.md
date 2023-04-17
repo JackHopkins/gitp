@@ -1,25 +1,26 @@
 # GitParts (gitp)
 
-GitParts is a drop-in Git replacement that accelerates your development workflow.
-
-Leverage GPT to generate commit messages and branch names based on your intent and staged changes, in order to have the most
+GitParts is a suite of drop-in Git automation tools designed to accelerate your development workflow.
 
 ## Features
-- Generate comprehensive commit messages (with subject and description) based on your staged changes.
+- Auto-generate comprehensive commit messages (with subject and description) based on your staged changes.
 - Automatically generate branch names from your intent and existing branch naming style.
 - Display branch descriptions alongside branch names when listing branches.
+- Back-fill your historic logs to enhance your git tree.
 - *Full drop-in replacement for Git*.
 
 ## Prerequisites
 - OpenAI API key
 - jq
 - Git
+- Bash
+- curl
 
 ## Get Started
 
 ```bash
 # Clone the Git repository
-git clone https://github.com/Noddybear/parts.git
+git clone https://github.com/JackHopkins/parts.git
 
 # Change to the cloned directory:
 cd parts
