@@ -69,4 +69,38 @@ else
     source ~/.bashrc
 fi
 
+# Prompt the user for their choice of GPT model
+echo "Please choose the GPT model you want to use:"
+echo "1. gpt-3.5-turbo"
+echo "2. gpt4"
+read -p "Enter the number corresponding to your choice (1 or 2): " model_choice
+
+# Set the GPT_MODEL_CHOICE environment variable based on the user's choice
+case "$model_choice" in
+    1)
+        GPT_MODEL_CHOICE="gpt-3.5-turbo"
+        ;;
+    2)
+        GPT_MODEL_CHOICE="gpt4"
+        ;;
+    *)
+        echo "Invalid choice. Defaulting to gpt-3.5-turbo."
+        GPT_MODEL_CHOICE="gpt-3.5-turbo"
+        ;;
+esac
+
+# Save the GPT_MODEL_CHOICE environment variable in the appropriate shell configuration file
+if [ "$(uname)" == "Darwin" ]; then
+    if [ "$SHELL" == "/bin/zsh" ]; then
+        echo "export GPT_MODEL_CHOICE=${GPT_MODEL_CHOICE}" >> ~/.zshrc
+        source ~/.zshrc
+    else
+      echo "export GPT_MODEL_CHOICE=${GPT_MODEL_CHOICE}" >> ~/.bash_profile
+      source ~/.bash_profile
+    fi
+else
+    echo "export GPT_MODEL_CHOICE=${GPT_MODEL_CHOICE}" >> ~/.bashrc
+    source ~/.bashrc
+fi
+
 echo "Installation complete! gitp will now intercept all git commands."
