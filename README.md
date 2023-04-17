@@ -1,8 +1,8 @@
 # GitParts (gitp)
 
-GitParts is a command-line tool that enhances your Git workflow.
+GitParts is a drop-in Git replacement that accelerates your development workflow.
 
-Leverage GPT to generate commit messages and branch names based on your intent and staged changes.
+Leverage GPT to generate commit messages and branch names based on your intent and staged changes, in order to have the most
 
 ## Features
 - Generate comprehensive commit messages (with subject and description) based on your staged changes.

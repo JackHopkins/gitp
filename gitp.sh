@@ -63,17 +63,12 @@ function improve_commit_message() {
     echo -e "${combined_message}" > "${tmp_file}"
 
     # Open the editor for the user to review and edit the message
-    ${EDITOR:-vi} "${tmp_file}"
-
-    # Read the updated message from the temporary file
-    local updated_message=$(<"${tmp_file}")
-
-    # Amend the commit with the updated message
-    git commit --amend -m "${updated_message}"
+    GIT_EDITOR="${EDITOR:-vi} -f" git commit --amend -e -F "${tmp_file}"
 
     # Clean up the temporary file
     rm "${tmp_file}"
 }
+
 
 function generate_branch_name() {
     local intent="$1"
