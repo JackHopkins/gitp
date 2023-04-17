@@ -2,6 +2,66 @@
 
 instruction="From the following data, generate a commit subject line and then a full description of the changes made in the form {subject}\n\n{description}, not including the git diff or branch:"
 
+function generate_commit_message() {
+    local branch_name="$1"
+    local git_diff="$2"
+    local intent="$3"
+    local GPT_MODEL_CHOICE="$4"
+    local GPT4_API_KEY="$5"
+
+    local instruction="From the following data, generate a commit subject line and then a full description of the changes made in the form {subject}\n\n{description}, not including the git diff or branch:"
+    local gpt_message="${instruction}: Branch: ${branch_name}. Git Diff: ${git_diff}."
+    if [ -n "${intent}" ]; then
+        gpt_message="${gpt_message} Intent: ${intent}."
+    fi
+    gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
+    local payload="{\"model\": \"${GPT_MODEL_CHOICE}\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
+
+    local api_response=$(curl -s -H "Content-Type: application/json" \
+                             -H "Authorization: Bearer ${GPT4_API_KEY}" \
+                             -d "${payload}" \
+                             https://api.openai.com/v1/chat/completions)
+
+    local error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
+    if [ -n "${error_message}" ]; then
+        # Return the error message
+        echo "${error_message}"
+        return 1
+    fi
+
+    local commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+    local commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')")
+    local commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
+
+    # Return the generated commit message subject and body
+    echo -e "${commit_message_subject}\n${commit_message_body}"
+    return 0
+}
+
+# Function to improve commit message
+function improve_commit_message() {
+    local commit_hash="$1"
+    local branch_name="$2"
+    local intent="$3"
+    local GPT_MODEL_CHOICE="$4"
+    local GPT4_API_KEY="$5"
+
+    # Get the original commit message
+    local original_message=$(git log -n 1 --pretty=format:"%B" "${commit_hash}")
+
+    # Get the git diff for the commit
+    local git_diff=$(git diff "${commit_hash}^" "${commit_hash}" | jq -sRr @json)
+
+    # Generate the commit message using GPT (similar to the 'commit' section)
+    read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+
+    # Amend the commit with the new message
+    git checkout "${commit_hash}"
+    git commit --amend -m "${commit_message_subject}" -m "${commit_message_body}"
+
+    echo "Commit message updated successfully!"
+}
+
 function generate_branch_name() {
     local intent="$1"
     local existing_branches="$2"
@@ -127,6 +187,45 @@ if [ "$1" == "commit" ]; then
     git notes --ref "branch-descriptions/${branch_name}" add -f -F "${tmp_file}"
     rm "${tmp_file}"
 
+# Check if the command is 'git log'
+elif [ "$1" == "log" ]; then
+    shift
+
+    backfill_flag="false"
+    num_commits=""
+    passthrough_flags=()
+
+    # Parse the flags
+    while (( "$#" )); do
+        case "$1" in
+            --backfill)
+                backfill_flag="true"
+                shift
+                ;;
+            -n)
+                num_commits="$2"
+                shift 2
+                ;;
+            *)
+                passthrough_flags+=( "$1" )
+                shift
+                ;;
+        esac
+    done
+
+    # Check if the backfill flag is set
+    if [ "${backfill_flag}" == "true" ]; then
+        # Get the list of commit hashes (up to the -n provided)
+        commit_hashes=$(git log -n "${num_commits}" --pretty=format:"%H")
+
+        # Iterate through each commit hash
+        while read -r commit_hash; do
+            # Call the function to improve the commit message
+            improve_commit_message "${commit_hash}" "${branch_name}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}"
+        done <<< "${commit_hashes}"
+    else
+        git log "${passthrough_flags[@]}"
+    fi
 elif [ "$1" == "branch" ]; then
     shift
     if [ "$#" -eq 0 ]; then
