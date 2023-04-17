@@ -48,7 +48,7 @@ fi
 # Prompt the user for their choice of GPT model
 echo "Please choose the GPT model you want to use:"
 echo "1. gpt-3.5-turbo"
-echo "2. gpt4"
+echo "2. gpt-4"
 read -p "Enter the number corresponding to your choice (1 or 2): " model_choice
 
 # Set the GPT_MODEL_CHOICE environment variable based on the user's choice
@@ -57,7 +57,7 @@ case "$model_choice" in
         GPT_MODEL_CHOICE="gpt-3.5-turbo"
         ;;
     2)
-        GPT_MODEL_CHOICE="gpt4"
+        GPT_MODEL_CHOICE="gpt-4"
         ;;
     *)
         echo "Invalid choice. Defaulting to gpt-3.5-turbo."

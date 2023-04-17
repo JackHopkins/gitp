@@ -215,6 +215,56 @@ elif [ "$1" == "checkout" ]; then
         git checkout "${passthrough_flags[@]}"
     fi
 
+elif [ "$1" == "log" ]; then
+    shift
+    backfill_flag=false
+    passthrough_flags=()
+
+    while (( "$#" )); do
+        case "$1" in
+            -b|--backfill)
+                backfill_flag=true
+                shift
+                ;;
+            *)
+                passthrough_flags+=( "$1" )
+                shift
+                ;;
+        esac
+    done
+
+    if [ "${backfill_flag}" == "true" ]; then
+        echo "Warning: Backfilling commit messages will rewrite commit history."
+        echo "         Do not perform this operation on branches that have been pushed to a remote repository."
+        read -p "Are you sure you want to proceed? (y/n): " confirm
+        if [ "${confirm}" == "y" ]; then
+            # Get the list of commit hashes
+            commit_hashes=$(git log --pretty=format:"%H")
+
+            # Iterate through each commit hash
+            while read -r commit_hash; do
+                # Get the original commit message
+                original_message=$(git log -n 1 --pretty=format:"%B" "${commit_hash}")
+
+                # Get the git diff for the commit
+                git_diff=$(git diff "${commit_hash}^" "${commit_hash}" | jq -sRr @json)
+
+                # Generate the commit message using GPT (similar to the 'commit' section)
+                # ...
+
+                # Combine the generated message with the original message
+                combined_message="${generated_message}\n\n${original_message}"
+
+                # Amend the commit with the combined message
+                #git rebase --interactive --autosquash -Xtheirs "${commit_hash}^"
+                #git commit --amend -m "${combined_message}"
+                #git rebase --continue
+                echo ${combined_message}
+            done <<< "${commit_hashes}"
+        fi
+    else
+        git log "${passthrough_flags[@]}"
+    fi
 else
     command git "$@"
 fi

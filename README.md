@@ -1,13 +1,13 @@
 # GitParts (gitp)
 
-GitParts is a drop-in replacement for Git which aims to improve the _clarity_ and _consistency_ in your repos.
-GitParts leverages the power of GPT, an family of advanced language models developed by OpenAI, to autogenerate commit messages and branch names.
+GitParts is a drop-in replacement for Git which aims to improve the _clarity_ and _consistency_ of your repos.
+GitParts auto-generates commit messages and branch names by leveraging the power of GPT, a family of advanced language models developed by OpenAI, to autogenerate commit messages and branch names.
 
 ## Features
-- Autogenerate best-practice commit messages with subject and description based on your staged changes. Optionally provide additional context with the --intent flag.
+- Autogenerate detailed and relevant commit messages with subject and description based on your staged changes. Optionally prompt additional context with the --intent flag.
 - Autogenerate branch names from your intent and existing branch naming style.
 - Display branch descriptions alongside branch names when listing branches.
-- Full drop-in replacement for Git.
+- *Full drop-in replacement for Git*.
 
 ## Prerequisites
 - OpenAI API key
@@ -87,3 +87,7 @@ chmod +x uninstall-gitp.sh
 # Run the uninstallation script:
 ./uninstall-gitp.sh
 ```
+
+## Experimental Features
+
+Backfilling Git Log
