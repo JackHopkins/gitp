@@ -63,7 +63,8 @@ function improve_commit_message() {
     echo -e "${combined_message}" > "${tmp_file}"
 
     # Open the editor for the user to review and edit the message
-    GIT_EDITOR="${EDITOR:-vi} -f" git commit --amend -e -F "${tmp_file}"
+    #GIT_EDITOR="${EDITOR:-vi} -f" git commit --amend -e -F "${tmp_file}"
+    GIT_EDITOR="sh -c '${EDITOR:-vi} -f \$1' --" git commit --amend -e -F "${tmp_file}"
 
     # Clean up the temporary file
     rm "${tmp_file}"
