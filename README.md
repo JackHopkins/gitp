@@ -39,7 +39,10 @@ After completing these steps, the installation is complete, and gitp will now in
 
 Auto-generate best-practice git commit messages from your staged commits.
 ```bash
+# Stage changes for commit
 git add .
+
+# Execute commit
 git commit
 ```
 
@@ -66,8 +69,8 @@ Switched to a new branch 'feature/new-user-authentication'
 ## Uninstall
 
 ```bash
-#Change to the cloned directory:
-cd parts
+# Change to the cloned directory:
+cd gitp
 
 # Make the un-installation script executable:
 chmod +x uninstall.gitp.sh
