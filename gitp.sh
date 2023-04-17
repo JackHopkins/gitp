@@ -22,23 +22,18 @@ function generate_commit_message() {
 
     local error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
     if [ -n "${error_message}" ]; then
-        echo "An error occurred while generating the commit message:"
+        # Return the error message
         echo "${error_message}"
-        exit 1
+        return 1
     fi
 
     local commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
-    local commit_message_subject="${commit_message_full%%$'\n\n'*}"  # Extract the subject (part before the first double newline)
-    local commit_message_body="${commit_message_full#*$'\n\n'}"     # Extract the body (part after the first double newline)
-
-    echo "Debug: Subject: ${commit_message_subject}" >&2
-    echo "Debug: Body: ${commit_message_body}" >&2
+    local commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?//')")
+    local commit_message_body=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed -E 's/^"?(Description: )?//')")
 
     # Return the generated commit message subject and body
-    #-e
-    echo "${commit_message_subject}"
-    echo "${commit_message_body}"
-    #return 0
+    echo -e "${commit_message_subject}\n${commit_message_body}"
+    return 0
 }
 
 function generate_branch_name() {
