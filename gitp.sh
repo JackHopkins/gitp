@@ -54,15 +54,24 @@ function improve_commit_message() {
 
     # Generate the commit message using GPT (similar to the 'commit' section)
     IFS=$'\n'
-    read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
+    commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+    if [ $? -ne 0 ]; then
+        echo "An error occurred while generating the commit message:"
+        echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
+        exit 1
+    fi
     unset IFS
+
+    # Assign the elements of the array to the subject and body variables
+    commit_message_subject="${commit_message_output[0]}"
+    commit_message_body="${commit_message_output[1]}"
+
     # Combine the generated message with the original message
     local combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
 
     # Create a temporary file to store the combined message
     local tmp_file=$(mktemp)
-    #echo -e "${combined_message}" > "${tmp_file}"
-    printf "%s" "${combined_message}" > "${tmp_file}"
+    echo -e "${combined_message}" > "${tmp_file}"
 
     # Open the editor for the user to review and edit the message
     #GIT_EDITOR="${editor_script}" git commit --amend -e -F "${tmp_file}"
