@@ -124,6 +124,11 @@ if [ "$1" == "commit" ]; then
 
     IFS=$'\n' read -r commit_message_subject commit_message_body < <(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}")
 
+
+    echo "Blah"
+    echo ${commit_message_subject}
+    echo ${commit_message_body}
+
     # If the edit_message flag is set, open the Git editor
     if [ "${edit_message}" == "true" ]; then
         tmp_file=$(mktemp)
