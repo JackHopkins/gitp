@@ -63,8 +63,7 @@ function improve_commit_message() {
     echo -e "${combined_message}" > "${tmp_file}"
 
     # Open the editor for the user to review and edit the message
-    # Use the 'script' command to run the editor in a new pseudo-terminal
-    script -q -c "${EDITOR:-vi} ${tmp_file}"
+    ${EDITOR:-vi} "${tmp_file}"
 
     # Read the updated message from the temporary file
     local updated_message=$(<"${tmp_file}")
