@@ -63,6 +63,10 @@ function improve_commit_message() {
     fi
     unset IFS
 
+    # Assign the elements of the array to the subject and body variables
+    commit_message_subject="${commit_message_output[0]}"
+    commit_message_body="${commit_message_output[1]}"
+
     # Combine the generated message with the original message
     local combined_message="${commit_message_subject}\n\n${commit_message_body}\n\n###RAW###\n\n${original_message}"
 
