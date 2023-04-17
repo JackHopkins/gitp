@@ -3,11 +3,11 @@
 GitParts is a suite of drop-in Git automation tools designed to accelerate your development workflow.
 
 ## Features
-- [ git commit ]: Auto-generate comprehensive commit messages (with subject and description) based on your staged changes. Never commit 'asdkjldgq' again.
-- [ git checkout -i ]: Automatically generate branch names from your intent and existing branch naming style.
-- [ git branch ]: Display branch descriptions alongside branch names when listing branches.
-- [ git log --backfill ]: Back-fill your logs to enhance the quality of commit messages in your git tree.
-- [ git * ]: Full drop-in replacement for Git.
+- [ `git commit` ]: Auto-generate comprehensive commit messages (with subject and description) based on your staged changes. Never commit 'asdkjldgq' again.
+- [ `git checkout -i` ]: Automatically generate branch names from your intent and existing branch naming style.
+- [ `git branch` ]: Display branch descriptions alongside branch names when listing branches.
+- [ `git log --backfill` ]: Back-fill your logs to enhance the quality of commit messages in your git tree.
+- [ `git *` ]: Full drop-in replacement for Git.
 
 ## Prerequisites
 - OpenAI API key
