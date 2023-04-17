@@ -11,10 +11,7 @@ GitParts is a suite of drop-in Git automation tools designed to accelerate your 
 
 ## Prerequisites
 - OpenAI API key
-- jq
-- Git
 - Bash
-- curl
 
 ## Get Started
 
