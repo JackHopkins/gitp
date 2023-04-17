@@ -63,17 +63,20 @@ function improve_commit_message() {
     echo -e "${combined_message}" > "${tmp_file}"
 
     # Create a custom script to open the editor in the foreground
-    local editor_script=$(mktemp)
-    echo "#!/bin/bash" > "${editor_script}"
-    echo "${EDITOR:-vi} -f \"\$1\"" >> "${editor_script}"
-    chmod +x "${editor_script}"
+    #local editor_script=$(mktemp)
+    #echo "#!/bin/bash" > "${editor_script}"
+    #echo "${EDITOR:-vi} -f \"\$1\"" >> "${editor_script}"
+    #chmod +x "${editor_script}"
 
     # Open the editor for the user to review and edit the message
-    GIT_EDITOR="${editor_script}" git commit --amend -e -F "${tmp_file}"
+    #GIT_EDITOR="${editor_script}" git commit --amend -e -F "${tmp_file}"
+    ${EDITOR:-vi} -f "${tmp_file}" </dev/tty
+
+    git commit --amend -F "${tmp_file}"
 
     # Clean up the temporary files
     rm "${tmp_file}"
-    rm "${editor_script}"
+    #rm "${editor_script}"
 }
 
 
@@ -159,29 +162,20 @@ if [ "$1" == "commit" ]; then
         fi
     fi
 
-    gpt_message="${instruction}: Branch: ${branch_name}. Git Diff: ${git_diff}."
-    if [ -n "${intent}" ]; then
-        gpt_message="${gpt_message} Intent: ${intent}."
-    fi
-    gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
-    payload="{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": ${gpt_message}}]}"
-
-    api_response=$(curl -s -H "Content-Type: application/json" \
-                         -H "Authorization: Bearer ${GPT4_API_KEY}" \
-                         -d "${payload}" \
-                         https://api.openai.com/v1/chat/completions)
-
-    error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
-    if [ -n "${error_message}" ]; then
+    commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+    if [ $? -ne 0 ]; then
         echo "An error occurred while generating the commit message:"
-        echo "${error_message}"
+        echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
         exit 1
     fi
 
-    commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+    # Assign the elements of the array to the subject and body variables
+    commit_message_subject="${commit_message_output[0]}"
+    commit_message_body="${commit_message_output[1]}"
 
-    commit_message_subject=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed 's/^Subject: //')
-    commit_message_body=$(echo "${commit_message_full}" | awk -F'\n\n' '{print $2}' | sed 's/^Description: //' | sed 's/\\n/\n/g')
+    # Debug: Print the read commit message subject and body
+    #echo "Debug: Read Subject: ${commit_message_subject}" >&2
+    #echo "Debug: Read Body: ${commit_message_body}" >&2
 
     if [ "${append_commit}" == "true" ]; then
         git commit --amend --no-edit --all "${passthrough_flags[@]}"
