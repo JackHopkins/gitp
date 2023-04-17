@@ -32,7 +32,7 @@ function generate_commit_message() {
     local commit_message_body="${commit_message_full#*$'\n\n'}"     # Extract the body (part after the first double newline)
 
     # Return the generated commit message subject and body
-    echo -e "${commit_message_subject}\n\n${commit_message_body}"
+    echo -e "${commit_message_subject}\n${commit_message_body}"
 }
 
 function generate_branch_name() {
