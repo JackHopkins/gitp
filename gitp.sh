@@ -170,9 +170,21 @@ if [ "$1" == "commit" ]; then
     IFS=$'\n'
     commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
     if [ $? -ne 0 ]; then
-        echo "An error occurred while generating the commit message:"
-        echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
-        exit 1
+        if [[ "${commit_message_output[0]}" == *"maximum context length"* ]]; then
+            # Get a shorter diff containing only file names
+            git_diff=$(git diff --staged --name-only | jq -sRr @json)
+            # Rerun the commit
+            commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+            if [ $? -ne 0 ]; then
+                echo "An error occurred while generating the commit message:"
+                echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
+                exit 1
+            fi
+        else
+            echo "An error occurred while generating the commit message:"
+            echo "${commit_message_output[0]}"  # The error message is stored in the first element of the array
+            exit 1
+        fi
     fi
     unset IFS
 
