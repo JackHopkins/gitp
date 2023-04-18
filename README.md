@@ -17,7 +17,7 @@ GitParts is a suite of drop-in Git automation tools designed to accelerate your 
 
 ```bash
 # Clone the Git repository
-git clone https://github.com/JackHopkins/parts.git
+git clone https://github.com/JackHopkins/gitp.git
 
 # Change to the cloned directory:
 cd gitp
