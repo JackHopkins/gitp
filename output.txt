@@ -1,0 +1,20 @@
+Ctags index has been created and stored in the .gitp directory.
+Getting the most recent changes with 'git diff'...
+Extracting changed methods and members...
+Querying the ctags file for changed methods and members...
+Method or member: check_and_install() {
+Ctags output: check_and_install	install.gitp.sh	/^check_and_install() {$/;"	f
+check_and_install	install.uctags.sh	/^check_and_install() {$/;"	f
+Method content:
+Filename: install.gitp.sh
+install.uctags.sh
+Line number: {$/{$/
+Error: File not found: install.gitp.sh
+install.uctags.sh
+------------------
+Method or member: extract_method_content() {
+Ctags output: extract_method_content	uctags.sh	/^extract_method_content() {$/;"	f
+Method content:
+Filename: uctags.sh
+Line number: {$/
+------------------
