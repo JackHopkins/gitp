@@ -57,6 +57,7 @@ index_files() {
   cscope_files="./.gitp/$language/cscope.files"
   cscope_out="./.gitp/$language/cscope.out"
   tags="./.gitp/$language/tags"
+  omnitags="./.gitp/tags"
   codequery_db="./.gitp/$language/codequery.db"
 
   if [ ${#files[@]} -eq 0 ]; then
@@ -69,6 +70,7 @@ index_files() {
       cscope -cb -i "$cscope_files" -f "$cscope_out"
     fi
     ctags --fields=+i -n -L "$cscope_files" --exclude=.git --exclude=.gitp -f "$tags"
+    ctags --fields=+i -n -L "$cscope_files" --exclude=.git --exclude=.gitp -f "$omnitags"
     cqmakedb -s "$codequery_db" -c "$cscope_out" -t "$tags" -p
   fi
 }

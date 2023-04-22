@@ -11,14 +11,28 @@ modified_items=$(echo "$git_diff" | perl -nle 'print $& if m{^\+[\w_]+\(\)}')
 # Remove the '+' and '()' characters to get the item names
 modified_item_names=$(echo "$modified_items" | sed 's/+\(.*\)(.*/\1/')
 
+echo $modified_item_names
 
-# Iterate through the modified item names and find their definitions in the tags file
+languages=("c" "python" "java" "shell")
+
+# Iterate through the modified item names
 while read -r item_name; do
   if [[ ! -z "$item_name" ]]; then
-      cqsearch -s ./.gitp/codequery.db -p 1 -t $item_name
-      cqsearch -s ./.gitp/codequery.db -p 2 -t $item_name
-      cqsearch -s ./.gitp/codequery.db -p 3 -t $item_name
-      cqsearch -s ./.gitp/codequery.db -p 4 -t $item_name
-      cqsearch -s ./.gitp/codequery.db -p 5 -t $item_name
+    # Search for the item_name in each language's tags file
+    for lang in "${languages[@]}"; do
+      tags_file="./.gitp/$lang/tags"
+      db_path="./.gitp/$lang/codequery.db"
+      if [ -e "$tags_file" ]; then
+        if grep -q -w -e "^$item_name" "$tags_file"; then
+          cqsearch -s "$db_path" -p 1 -t "$item_name"
+          cqsearch -s "$db_path" -p 2 -t "$item_name"
+          cqsearch -s "$db_path" -p 3 -t "$item_name"
+          cqsearch -s "$db_path" -p 4 -t "$item_name"
+          cqsearch -s "$db_path" -p 5 -t "$item_name"
+          cqsearch -s "$db_path" -p 5 -t "$item_name"
+          break
+        fi
+      fi
+    done
   fi
 done <<< "$modified_item_names"
