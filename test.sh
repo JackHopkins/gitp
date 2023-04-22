@@ -1,1 +1,1 @@
-generate_branch_name()
+generate_commit_message()
