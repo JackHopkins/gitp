@@ -1,0 +1,1 @@
+generate_branch_name()
