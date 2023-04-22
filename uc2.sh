@@ -29,7 +29,13 @@ while read -r item_name; do
           cqsearch -s "$db_path" -p 3 -t "$item_name"
           cqsearch -s "$db_path" -p 4 -t "$item_name"
           cqsearch -s "$db_path" -p 5 -t "$item_name"
-          cqsearch -s "$db_path" -p 5 -t "$item_name"
+          cqsearch -s "$db_path" -p 6 -t "$item_name"
+          cqsearch -s "$db_path" -p 7 -t "$item_name"
+          cqsearch -s "$db_path" -p 8 -t "$item_name"
+          cqsearch -s "$db_path" -p 9 -t "$item_name"
+          cqsearch -s "$db_path" -p 10 -t "$item_name"
+          cqsearch -s "$db_path" -p 11 -t "$item_name"
+          cqsearch -s "$db_path" -p 12 -t "$item_name"
           break
         fi
       fi
