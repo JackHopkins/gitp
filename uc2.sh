@@ -24,19 +24,21 @@ while read -r item_name; do
       db_path="./.gitp/$lang/codequery.db"
       if [ -e "$tags_file" ]; then
         if grep -q -w -e "^$item_name" "$tags_file"; then
-          echo "$item_name"
-          cqsearch -s "$db_path" -p 1 -t "$item_name"
-          cqsearch -s "$db_path" -p 2 -t "$item_name"
-          cqsearch -s "$db_path" -p 3 -t "$item_name"
-          cqsearch -s "$db_path" -p 4 -t "$item_name"
-          cqsearch -s "$db_path" -p 5 -t "$item_name"
-          cqsearch -s "$db_path" -p 6 -t "$item_name"
-          cqsearch -s "$db_path" -p 7 -t "$item_name"
-          cqsearch -s "$db_path" -p 8 -t "$item_name"
-          cqsearch -s "$db_path" -p 9 -t "$item_name"
-          cqsearch -s "$db_path" -p 10 -t "$item_name"
-          cqsearch -s "$db_path" -p 11 -t "$item_name"
-          cqsearch -s "$db_path" -p 12 -t "$item_name"
+          #echo "$item_name"
+          cqsearch -s "$db_path" -p 1 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 2 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 3 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 4 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 5 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 6 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 7 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 8 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 9 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 10 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 11 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 12 -t "$item_name" -l 0 >> output.txt
+          cqsearch -s "$db_path" -p 13 -t "$item_name" -l 0 >> output.txt
+
           break
         fi
       fi

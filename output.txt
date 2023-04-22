@@ -1,20 +1,20 @@
-Ctags index has been created and stored in the .gitp directory.
-Getting the most recent changes with 'git diff'...
-Extracting changed methods and members...
-Querying the ctags file for changed methods and members...
-Method or member: check_and_install() {
-Ctags output: check_and_install	install.gitp.sh	/^check_and_install() {$/;"	f
-check_and_install	install.uctags.sh	/^check_and_install() {$/;"	f
-Method content:
-Filename: install.gitp.sh
-install.uctags.sh
-Line number: {$/{$/
-Error: File not found: install.gitp.sh
-install.uctags.sh
-------------------
-Method or member: extract_method_content() {
-Ctags output: extract_method_content	uctags.sh	/^extract_method_content() {$/;"	f
-Method content:
-Filename: uctags.sh
-Line number: {$/
-------------------
+generate_commit_message	gitp.sh:5	function generate_commit_message() {
+generate_commit_message	gitp.sh:57	commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+generate_commit_message	gitp.sh:171	commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+generate_commit_message	gitp.sh:177	commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+generate_commit_message	gitp.sh:5	function generate_commit_message() {
+$	gitp.sh:17	gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
+$	gitp.sh:20	local api_response=$(curl -s -H "Content-Type: application/json" \
+$	gitp.sh:25	local error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
+$	gitp.sh:32	local commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+$	gitp.sh:33	local commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?
+generate_commit_message	gitp.sh:5	function generate_commit_message() {
+generate_commit_message	gitp.sh:57	commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+generate_commit_message	gitp.sh:171	commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+generate_commit_message	gitp.sh:177	commit_message_output=( $(generate_commit_message "${branch_name}" "${git_diff}" "${intent}" "${GPT_MODEL_CHOICE}" "${GPT4_API_KEY}") )
+generate_commit_message	gitp.sh:5	function generate_commit_message() {
+$	gitp.sh:17	gpt_message=$(echo "${gpt_message}" | jq -sRr @json)
+$	gitp.sh:20	local api_response=$(curl -s -H "Content-Type: application/json" \
+$	gitp.sh:25	local error_message=$(echo "${api_response}" | jq -r '.error.message // empty')
+$	gitp.sh:32	local commit_message_full=$(echo "${api_response}" | jq -r '.choices[0].message.content' | tr -d '\r')
+$	gitp.sh:33	local commit_message_subject=$(printf "%b" "$(echo "${commit_message_full}" | awk -F'\n\n' '{print $1}' | sed -E 's/^"?(Subject: )?
