@@ -13,7 +13,7 @@ modified_items=$(echo "$git_diff" | perl -nle 'print $& if m{^\+[\w_]+\(\)}')
 modified_item_names=$(echo "$modified_items" | sed 's/+\(.*\)(.*/\1/')
 
 
-languages=("c" "python" "java" "shell", )
+languages=("c" "python" "java" "shell", "ruby", "javascript", "golang")
 
 # Iterate through the modified item names
 while read -r item_name; do
