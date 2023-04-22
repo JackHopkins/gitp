@@ -20,7 +20,7 @@ else
     exit 1
 fi
 
-ctags -R --fields=+l --languages=-all --languages=+sh,+c,+C++,+python --extras=+q --exclude=.git --exclude=.gitp -f .gitp/tags
+ctags -R --kinds-c=f --fields=+l --languages=-all --languages=+sh,+c,+C++,+python --extras=+q --exclude=.git --exclude=.gitp -f .gitp/tags
 
 # Save git diff output to a temporary file
 temp_diff_file=$(mktemp)
@@ -28,26 +28,34 @@ git diff HEAD~1 > "$temp_diff_file"
 
 # Read git diff output from the temporary file
 git_diff=$(cat "$temp_diff_file")
-echo "$temp_diff_file"
-#echo "$git_diff"
-# Get the list of modified functions and variables from the diff
-#modified_items=$(echo "$git_diff" | grep -oP '^\+[\w_]+\(\)')
 
 # Get the list of modified functions and variables from the diff using perl
 modified_items=$(echo "$git_diff" | perl -nle 'print $& if m{^\+[\w_]+\(\)}')
 
-
-echo $modified_items
 # Remove the '+' and '()' characters to get the item names
 modified_item_names=$(echo "$modified_items" | sed 's/+\(.*\)(.*/\1/')
 
 # Iterate through the modified item names and find their definitions in the tags file
 while read -r item_name; do
   if [[ ! -z "$item_name" ]]; then
-    tag_line=$(grep -m 1 "^$item_name" tags)
-    echo "$tag_line"
+    tag_line=$(grep -m 1 "^$item_name\\s" .gitp/tags)
+    # Get the source file and the search pattern from the tag_line
+    source_file=$(echo "$tag_line" | awk '{print $2}')
+    search_pattern=$(echo "$tag_line" | awk '{print $3}' | sed 's/\/\^//;s/\$\/;//')
+
+    # Find the function definition line number
+    function_line_number=$(grep -n -m 1 -E "$search_pattern" "$source_file" | cut -f1 -d:)
+
+    # Print lines around the function definition
+    if [[ ! -z "$function_line_number" ]]; then
+      start_line=$((function_line_number - context_lines))
+      end_line=$((function_line_number + context_lines))
+      echo "----- $source_file (lines $start_line to $end_line) -----"
+      sed -n "${start_line},${end_line}p" "$source_file"
+    fi
   fi
 done <<< "$modified_item_names"
+
 
 exit 1
 # Set the GTAGSROOT environment variable to point to the .gitp directory
