@@ -1,9 +1,3 @@
-# Support for Shell Script
-find . -iname "*.sh" > ./.gitp/cscope.files
-cscope -cb -i ./.gitp/cscope.files -f ./.gitp/cscope.out
-ctags --fields=+i -n -L ./.gitp/cscope.files --exclude=.git --exclude=.gitp -f .gitp/tags
-cqmakedb -s ./.gitp/codequery.db -c ./.gitp/cscope.out -t ./.gitp/tags -p
-
 # Save git diff output to a temporary file
 temp_diff_file=$(mktemp)
 git diff HEAD~1 > "$temp_diff_file"

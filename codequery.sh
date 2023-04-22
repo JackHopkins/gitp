@@ -1,3 +1,19 @@
+#!/bin/bash
+
+# Function to store find results in an array
+find_to_array() {
+  local _result_var="$1"
+  shift
+  local _find_args=("$@")
+  local _files=()
+
+  while IFS= read -r -d $'\0' file; do
+    _files+=("$file")
+  done < <(find "${_find_args[@]}" -print0)
+
+  eval "$_result_var=(\"\${_files[@]}\")"
+}
+
 # Check if a .git directory exists in the local directory
 if [ -d "./.git" ]; then
     # If so, create a .gitp directory if it doesn't already exist
@@ -26,37 +42,49 @@ else
     exit 1
 fi
 
-# Support for C/C++
-find . -iname "*.c"    > ./cscope.files
-find . -iname "*.cpp" >> ./cscope.files
-find . -iname "*.cxx" >> ./cscope.files
-find . -iname "*.cc " >> ./cscope.files
-find . -iname "*.h"   >> ./cscope.files
-find . -iname "*.hpp" >> ./cscope.files
-find . -iname "*.hxx" >> ./cscope.files
-find . -iname "*.hh " >> ./cscope.files
 
-cscope -cb
-ctags --fields=+i -n -L ./.gitp/cscope.files
-cqmakedb -s ./codequery.db -c ./.gitp/cscope.out -t ./.gitp/tags -p
+# Create directories for each language
+mkdir -p ./.gitp/c
+mkdir -p ./.gitp/python
+mkdir -p ./.gitp/java
+mkdir -p ./.gitp/shell
+
+# Function to perform indexing
+index_files() {
+  language=$1
+  file_list=$2
+  IFS='|' read -ra files <<< "$file_list"
+  cscope_files="./.gitp/$language/cscope.files"
+  cscope_out="./.gitp/$language/cscope.out"
+  tags="./.gitp/$language/tags"
+  codequery_db="./.gitp/$language/codequery.db"
+
+  if [ ${#files[@]} -eq 0 ]; then
+    echo "No .$language files found."
+  else
+    printf "%s\n" "${files[@]}" > "$cscope_files"
+    if [ "$language" == "python" ]; then
+      python .gitp/pycscope/pycscope/__init__.py -i "$cscope_files" -f "$cscope_out"
+    else
+      cscope -cb -i "$cscope_files" -f "$cscope_out"
+    fi
+    ctags --fields=+i -n -L "$cscope_files" --exclude=.git --exclude=.gitp -f "$tags"
+    cqmakedb -s "$codequery_db" -c "$cscope_out" -t "$tags" -p
+  fi
+}
+
+# Support for C/C++
+c_files=$(find . \( -iname "*.c" -o -iname "*.cpp" -o -iname "*.cxx" -o -iname "*.cc" -o -iname "*.h" -o -iname "*.hpp" -o -iname "*.hxx" -o -iname "*.hh" \) | tr '\n' '|')
+index_files "c" "$c_files"
 
 # Support for Python
-find . -iname "*.py"    > ./.gitp/cscope.files
-python .gitp/pycscope/pycscope/__init__.py -i ./.gitp/cscope.files -f ./.gitp/cscope.out
-ctags --fields=+i -n -L ./.gitp/cscope.files  --exclude=.git --exclude=.gitp -f .gitp/tags
-cqmakedb -s ./.gitp/codequery.db -c ./.gitp/cscope.out -t ./.gitp/tags -p
+python_files=$(find . -iname "*.py" | tr '\n' '|')
+index_files "python" "$python_files"
 
 # Support for Java
-find . -iname "*.java" > ./.gitp/cscope.files
-cscope -cb -i ./.gitp/cscope.files -f ./.gitp/cscope.out
-ctags --fields=+i -n -L ./.gitp/cscope.files
-cqmakedb -s ./codequery.db -c ./.gitp/cscope.out -t ./tags -p
+java_files=$(find . -iname "*.java" | tr '\n' '|')
+index_files "java" "$java_files"
 
 # Support for Shell Script
-find . -iname "*.sh" > ./.gitp/cscope.files
-cscope -cb -i ./.gitp/cscope.files -f ./.gitp/cscope.out
-ctags --fields=+i -n -L ./.gitp/cscope.files --exclude=.git --exclude=.gitp -f .gitp/tags
-cqmakedb -s ./.gitp/codequery.db -c ./.gitp/cscope.out -t ./.gitp/tags -p
-
-
-cqsearch -s ./.gitp/codequery.db -p 1 -t format
+shell_files=$(find . -iname "*.sh" | tr '\n' '|')
+index_files "shell" "$shell_files"
