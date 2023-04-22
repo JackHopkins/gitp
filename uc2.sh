@@ -8,12 +8,12 @@ git_diff=$(cat "$temp_diff_file")
 # Get the list of modified functions and variables from the diff using perl
 modified_items=$(echo "$git_diff" | perl -nle 'print $& if m{^\+[\w_]+\(\)}')
 
+
 # Remove the '+' and '()' characters to get the item names
 modified_item_names=$(echo "$modified_items" | sed 's/+\(.*\)(.*/\1/')
 
-echo $modified_item_names
 
-languages=("c" "python" "java" "shell")
+languages=("c" "python" "java" "shell", )
 
 # Iterate through the modified item names
 while read -r item_name; do

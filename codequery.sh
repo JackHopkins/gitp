@@ -44,6 +44,9 @@ fi
 
 
 # Create directories for each language
+mkdir -p ./.gitp/ruby
+mkdir -p ./.gitp/golang
+mkdir -p ./.gitp/javascript
 mkdir -p ./.gitp/c
 mkdir -p ./.gitp/python
 mkdir -p ./.gitp/java
@@ -57,7 +60,6 @@ index_files() {
   cscope_files="./.gitp/$language/cscope.files"
   cscope_out="./.gitp/$language/cscope.out"
   tags="./.gitp/$language/tags"
-  omnitags="./.gitp/tags"
   codequery_db="./.gitp/$language/codequery.db"
 
   if [ ${#files[@]} -eq 0 ]; then
@@ -66,14 +68,27 @@ index_files() {
     printf "%s\n" "${files[@]}" > "$cscope_files"
     if [ "$language" == "python" ]; then
       python .gitp/pycscope/pycscope/__init__.py -i "$cscope_files" -f "$cscope_out"
+    elif [ "$language" == "ruby" ] || [ "$language" == "javascript" ] || [ "$language" == "golang" ]; then
+      starscope -e cscope -i "$cscope_files" -o "$cscope_out"
     else
       cscope -cb -i "$cscope_files" -f "$cscope_out"
     fi
     ctags --fields=+i -n -L "$cscope_files" --exclude=.git --exclude=.gitp -f "$tags"
-    ctags --fields=+i -n -L "$cscope_files" --exclude=.git --exclude=.gitp -f "$omnitags"
     cqmakedb -s "$codequery_db" -c "$cscope_out" -t "$tags" -p
   fi
 }
+
+# Support for JS
+js_files=$(find . -iname "*.js" | tr '\n' '|')
+index_files "javascript" "$js_files"
+
+# Support for Go
+go_files=$(find . -iname "*.go" | tr '\n' '|')
+index_files "golang" "$go_files"
+
+# Support for Ruby
+rb_files=$(find . -iname "*.rb" | tr '\n' '|')
+index_files "ruby" "$rb_files"
 
 # Support for C/C++
 c_files=$(find . \( -iname "*.c" -o -iname "*.cpp" -o -iname "*.cxx" -o -iname "*.cc" -o -iname "*.h" -o -iname "*.hpp" -o -iname "*.hxx" -o -iname "*.hh" \) | tr '\n' '|')
